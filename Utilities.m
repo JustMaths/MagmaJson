@@ -53,6 +53,14 @@ intrinsic 'eq'(A::Assoc, B::Assoc) -> BoolElt
   }
   return (Universe(A) cmpeq Universe(B)) and (Keys(A) eq Keys(B)) and forall{ k : k in Keys(A) | A[k] cmpeq B[k] };
 end intrinsic;
+
+intrinsic Values(A::Assoc) -> List
+  {
+  The values of the associative array.
+  }
+  out := [*  A[i] : i in Keys(A) *];
+  return out;
+end intrinsic;
 /*
 
 ======= GroupName for older versions of magma =======
@@ -115,3 +123,28 @@ intrinsic Subsets(S::SetIndx:empty := true) -> SetIndx
   
   return Sort({@ Sort(IndexedSet(T), S_Sort) : T in subsets @}, sub_Sort);
 end intrinsic;
+
+intrinsic IsPermutation(X::SeqEnum, Y::SeqEnum) -> BoolElt, SeqEnum
+  {
+    Returns if Y is a permutation of X. If so the returns the permutation 
+      mapping X to Y.
+  }
+  if #X ne #Y then
+    return false, [];
+  end if;
+  perm := [];
+  YUsed := {};
+  for x in X do
+    y := 0;
+    repeat
+      y := Index(Y, x, y+1);
+    until y notin YUsed;
+    if y eq 0 then
+      return false, [];
+    end if;
+    Include(~YUsed, y);
+    Append(~perm, y);
+  end for;
+  return true, perm;
+end intrinsic;
+    
