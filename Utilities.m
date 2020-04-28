@@ -58,8 +58,79 @@ intrinsic Values(A::Assoc) -> List
   {
   The values of the associative array.
   }
-  out := [*  A[i] : i in Keys(A) *];
+  out := [* A[i] : i in Keys(A) *];
   return out;
+end intrinsic;
+/*
+
+======= file system functions for Magma =======
+
+*/
+ls_script := "
+import os
+import sys
+
+filename = sys.argv[1]
+
+print(\"/\".join(os.listdir(filename)))
+";
+
+// Added to fix weird problem with the script not running properly on some machines
+// ASCI char 13 (not \r in magma!) is ignored on some computers and causes an error on others.
+ls_script := &cat Split(ls_script, CodeToString(13));
+
+intrinsic ls(dirname::MonStgElt) -> SeqEnum
+  {
+  ls
+  }
+  string := Pipe(Sprintf("python -c '%o' '%o'", ls_script, dirname), "");
+  return Split(string, "\n/");
+end intrinsic;
+
+size_script := "
+import os
+import sys
+
+filename = sys.argv[1]
+
+print(os.stat(filename).st_size)
+";
+
+// Added to fix weird problem with the script not running properly on some machines
+// ASCI char 13 (not \r in magma!) is ignored on some computers and causes an error on others.
+size_script := &cat Split(size_script, CodeToString(13));
+
+intrinsic Size(filename::MonStgElt) -> RngIntElt
+  {
+  Gets the file size.
+  }
+  string := Pipe(Sprintf("python -c '%o' '%o'", size_script, filename), "");
+  return eval(string);
+end intrinsic;
+
+exists_script := "
+import os
+import sys
+
+filename = sys.argv[1]
+
+print(os.path.isdir(filename))
+";
+
+// Added to fix weird problem with the script not running properly on some machines
+// ASCI char 13 (not \r in magma!) is ignored on some computers and causes an error on others.
+exists_script := &cat Split(exists_script, CodeToString(13));
+
+intrinsic ExistsPath(dirname::MonStgElt) -> BoolElt
+  {
+  Returns whether the directory given by dirname exists.
+  }
+  string := Pipe(Sprintf("python -c '%o' '%o'", exists_script, dirname), "");
+  if string eq "True\n" then
+    return true;
+  else
+    return false;
+  end if;
 end intrinsic;
 /*
 
