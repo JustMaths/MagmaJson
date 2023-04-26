@@ -32,7 +32,7 @@ intrinsic AssociativeArray(x::List) -> Assoc
   }
   A := AssociativeArray();
   for p in x do
-    require #p eq 2 : "Ill—formed pair in AssociativeArray";
+    require #p eq 2 : "Ill-formed pair in AssociativeArray";
     A[p[1]] := p[2];
   end for;
   return A;
