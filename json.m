@@ -2,7 +2,7 @@
 
 Code for saving and loading magma objects to/from JSON format.
 Written by Michael Fryers, 2016.
-Edited by Justin McInroy 2017-20.
+Edited by Justin McInroy 2017-23.
 
 */
 
@@ -188,7 +188,7 @@ end intrinsic;
 
 // Matrices
 
-intrinsic JSON(x::AlgMatElt : nl:="\n") -> MonStgElt
+intrinsic JSON(x::Mtrx : nl:="\n") -> MonStgElt
   {
   Serialise a matrix over QQ, GF(p), or ZZ as an array of arrays, or over a function field, or a polynomial ring in one variable, a class with ring, number of rows, number of columns and a sequence of values.
   }
