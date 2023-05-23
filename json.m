@@ -65,7 +65,7 @@ produce a JSON object; otherwise we produce a JSON array.
   }
   newnl := nl cat indent;
   if #x gt 0 and Type(x[1]) eq Tup and #x[1] eq 2 then
-    require forall{true:t in x|Type(t) eq Tup and #t eq 2}: "Ill—formed pair—list in JSON";
+    require forall{true:t in x|Type(t) eq Tup and #t eq 2}: "Ill-formed pair-list in JSON";
     strs := [ Sprintf("\"%o\": %o", t[1], JSON(t[2] : nl:=newnl)) : t in x ];
     return makeseq("{", strs, ",", "}", nl);
   else
