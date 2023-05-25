@@ -192,12 +192,13 @@ intrinsic JSON(x::Mtrx : nl:="\n") -> MonStgElt
   {
   Serialise a matrix over QQ, GF(p), or ZZ as an array of arrays, or over a function field, or a polynomial ring in one variable, a class with ring, number of rows, number of columns and a sequence of values.
   }
-  if NumberOfRows(x) eq 0 and NumberOfColumns(x) eq 0 then
+  if Nrows(x) eq 0 and Ncols(x) eq 0 then
     return "[ ]";
   end if;
   B := BaseRing(x);
   rs := [Eltseq(r):r in Rows(x)];
-  if (IsField(B) and IsPrimeField(B)) or B cmpeq ZZ then
+  if Nrows(x) ne 0 and Ncols(x) ne 0 and
+      ((IsField(B) and IsPrimeField(B)) or B cmpeq ZZ) then
     strs := [[x in ZZ select IntegerToString(ZZ!x) else Sprintf("\"%o\"",x):x in r]:r in rs];
     f := Sprintf("%%%oo", Max([#s:s in r,r in strs]));
     strs := [[Sprintf(f,s):s in r]:r in strs];
@@ -225,6 +226,22 @@ intrinsic JSON(M::MtrxSprs : nl:="\n") -> MonStgElt
             <"values", [* [* t[1], t[2], t[3] *] : t in Eltseq(M)*]>*];
 
   return JSON(mat: nl:=nl);
+end intrinsic;
+
+intrinsic JSON(U::ModTupRng : nl:="\n", sparse_dim:=10) -> MonStgElt
+  {
+  Serialise a (sub)module over a ring.  Use sparse form if the degree is greater than sparse_dim.  Set sparse_dim to a negative to force non-sparse form.
+  }
+  UU := [* <"class", "R-module">,
+           <"ring", Sprintf("%m", BaseRing(U))>*];
+  
+  // Could be smarter about this for deciding when to use sparse matrices.  Could even make JSON(Mtrx) above do this automatically.
+  if sparse_dim ge 0 and Degree(U) gt sparse_dim then
+    Append(~UU, <"values", SparseMatrix(BasisMatrix(U))>);
+  else
+    Append(~UU, <"values", BasisMatrix(U)>);
+  end if;
+  return JSON(UU);
 end intrinsic;
 
 // Useful functions for undoing JSONisation
@@ -336,6 +353,21 @@ intrinsic SparseMatrix(R::Rng, M::Assoc) -> MtrxSprs
   m := Numbers(M["columns"]);
   
   return SparseMatrix(F, n, m, [ <x[1], x[2], Numbers(x[3])> : x in M["values"]]);
+end intrinsic;
+
+intrinsic RSpace(Ass::Assoc) -> ModTupRng
+  {
+  Convert a JSONised (sub)module into an R-(sub)module.
+  }
+  keys := Keys(Ass);
+  require "class" in keys and Ass["class"] eq "R-module": "The file given does not encode an R-module.";
+  
+  require keys eq {"class", "ring", "values"}: "Invalid JSON format for an R-module";
+  
+  R := eval(Ass["ring"]);
+  M := Matrix(R, Ass["values"]);
+  
+  return RSpaceWithBasis(M);
 end intrinsic;
 /*
 Deserialisation
