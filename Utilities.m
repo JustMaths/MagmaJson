@@ -51,7 +51,7 @@ intrinsic 'eq'(A::Assoc, B::Assoc) -> BoolElt
   {
   Equality for associative arrays.
   }
-  return (Universe(A) cmpeq Universe(B)) and (Keys(A) eq Keys(B)) and forall{ k : k in Keys(A) | A[k] cmpeq B[k] };
+  return IsNull(Keys(A)) eq IsNull(Keys(B)) and Keys(A) eq Keys(B) and forall{ k : k in Keys(A) | A[k] cmpeq B[k] };
 end intrinsic;
 
 intrinsic Values(A::Assoc) -> List
