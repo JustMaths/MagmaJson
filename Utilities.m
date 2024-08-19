@@ -5,6 +5,7 @@ Some handy Magma utilities.
 NB some of these may make questionable choices.
 
 */
+import "json.m": python_name;
 /*
 
 ======= Hash functions for Lists and tuples =======
@@ -83,7 +84,7 @@ intrinsic ls(dirname::MonStgElt) -> SeqEnum
   {
   ls
   }
-  string := Pipe(Sprintf("python -c '%o' '%o'", ls_script, dirname), "");
+  string := Pipe(Sprintf("'%o' -c '%o' '%o'", python_name, ls_script, dirname), "");
   return Split(string, "\n/");
 end intrinsic;
 
@@ -104,7 +105,7 @@ intrinsic Size(filename::MonStgElt) -> RngIntElt
   {
   Gets the file size.
   }
-  string := Pipe(Sprintf("python -c '%o' '%o'", size_script, filename), "");
+  string := Pipe(Sprintf("'%o' -c '%o' '%o'", python_name, size_script, filename), "");
   return eval(string);
 end intrinsic;
 
@@ -125,7 +126,7 @@ intrinsic ExistsPath(dirname::MonStgElt) -> BoolElt
   {
   Returns whether the directory given by dirname exists.
   }
-  string := Pipe(Sprintf("python -c '%o' '%o'", exists_script, dirname), "");
+  string := Pipe(Sprintf("'%o' -c '%o' '%o'", python_name, exists_script, dirname), "");
   if string eq "True\n" then
     return true;
   else

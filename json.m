@@ -5,6 +5,8 @@ Written by Michael Fryers, 2016.
 Edited by Justin McInroy 2017-23.
 
 */
+// Variable to set your python
+python_name:= "python3";
 
 ZZ := Integers();
 
@@ -439,5 +441,5 @@ intrinsic ParseJSON(s::MonStgElt) -> Any
   null := <>;
   inf := Infinity();
   nan := <"nan">;
-  return eval(Pipe("python -c '" cat pyscript cat "'",s));
+  return eval(Pipe(python_name cat " -c '" cat pyscript cat "'",s));
 end intrinsic;
